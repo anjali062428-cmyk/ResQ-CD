@@ -1,0 +1,3 @@
+com\resqcd\app\ApiController.class
+com\resqcd\app\Application.class
+com\resqcd\app\CustomHealthIndicator.class
