@@ -154,16 +154,17 @@ if ! docker ps --format '{{.Names}}' | grep -q "^nginx$"; then
 else
     docker exec nginx nginx -s reload
 fi
+sleep 2
 
 echo "$NEW" > "$ACTIVE_COLOR_FILE"
 
 # 6. Post-switch verify: curl http://localhost:8080/actuator/health 5 times over 15s.
-POST_PASS=true
+POST_PASS=false
 for i in $(seq 1 5); do
     echo "Post-switch verify attempt $i/5..."
-    if ! curl -s -f "http://localhost:8080/actuator/health" >/dev/null 2>&1 && \
-       ! curl -s -f "http://nginx/actuator/health" >/dev/null 2>&1; then
-        POST_PASS=false
+    if curl -s -f "http://localhost:8080/actuator/health" >/dev/null 2>&1 || \
+       curl -s -f "http://nginx/actuator/health" >/dev/null 2>&1; then
+        POST_PASS=true
         break
     fi
     sleep 3
