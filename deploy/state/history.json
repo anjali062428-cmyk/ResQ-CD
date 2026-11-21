@@ -22,5 +22,29 @@
     "status": "FAILED_HEALTHCHECK",
     "reason": "FAILED_HEALTHCHECK",
     "duration_sec": 61
+  },
+  {
+    "timestamp": "2026-11-21T09:31:11Z",
+    "version": "5",
+    "color": "green",
+    "status": "SUCCESS",
+    "reason": "SUCCESS",
+    "duration_sec": 35
+  },
+  {
+    "timestamp": "2026-11-21T09:33:59Z",
+    "version": "6",
+    "color": "blue",
+    "status": "FAILED_HEALTHCHECK",
+    "reason": "FAILED_HEALTHCHECK",
+    "duration_sec": 54
+  },
+  {
+    "timestamp": "2026-11-21T09:43:55Z",
+    "version": "7",
+    "color": "blue",
+    "status": "SUCCESS",
+    "reason": "SUCCESS",
+    "duration_sec": 30
   }
 ]

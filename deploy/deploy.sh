@@ -120,7 +120,7 @@ if [ -n "${BREAK_HEALTH:-}" ]; then
 fi
 
 echo "Starting container $NEW from image resqcd:${IMAGE_TAG}..."
-docker run -d --name "$NEW" --network resqcd-net "${ENV_ARGS[@]}" "resqcd:${IMAGE_TAG}"
+docker run -d --name "$NEW" --network resqcd-net -e APP_VERSION="$IMAGE_TAG" "${ENV_ARGS[@]}" "resqcd:${IMAGE_TAG}"
 
 # 3. Health check NEW at http://NEW:8080/actuator/health from a curl container on resqcd-net. Retry 10x, 3s gap.
 HEALTHY=false
