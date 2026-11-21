@@ -1,0 +1,26 @@
+[
+  {
+    "timestamp": "2026-11-21T05:13:04Z",
+    "version": "v1",
+    "color": "green",
+    "status": "SUCCESS",
+    "reason": "SUCCESS",
+    "duration_sec": 43
+  },
+  {
+    "timestamp": "2026-11-21T05:14:04Z",
+    "version": "v2",
+    "color": "blue",
+    "status": "SUCCESS",
+    "reason": "SUCCESS",
+    "duration_sec": 42
+  },
+  {
+    "timestamp": "2026-11-21T05:38:59Z",
+    "version": "v3",
+    "color": "green",
+    "status": "FAILED_HEALTHCHECK",
+    "reason": "FAILED_HEALTHCHECK",
+    "duration_sec": 61
+  }
+]
