@@ -24,10 +24,11 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
+                    def deployScript = fileExists('/deploy/deploy.sh') ? '/deploy/deploy.sh' : 'deploy/deploy.sh'
                     if (params.INJECT_FAILURE) {
-                        sh "BREAK_HEALTH=true bash deploy/deploy.sh ${BUILD_NUMBER}"
+                        sh "BREAK_HEALTH=true bash ${deployScript} ${BUILD_NUMBER}"
                     } else {
-                        sh "bash deploy/deploy.sh ${BUILD_NUMBER}"
+                        sh "bash ${deployScript} ${BUILD_NUMBER}"
                     }
                 }
             }
@@ -36,6 +37,7 @@ pipeline {
 
     post {
         always {
+            sh "if [ -f /deploy/state/history.json ]; then mkdir -p deploy/state && cp /deploy/state/history.json deploy/state/history.json; fi"
             archiveArtifacts artifacts: 'deploy/state/history.json', allowEmptyArchive: true
         }
     }

@@ -8,12 +8,31 @@ if [ -z "$IMAGE_TAG" ]; then
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-STATE_DIR="$SCRIPT_DIR/state"
+
+# Shared state directory: prefer environment variable, then mounted /deploy, then relative to script
+if [ -n "${STATE_DIR:-}" ]; then
+    STATE_DIR="$STATE_DIR"
+elif [ -d "/deploy/state" ]; then
+    STATE_DIR="/deploy/state"
+elif [ -d "/c/Users/Dell/Documents/ResQ-CD/deploy/state" ]; then
+    STATE_DIR="/c/Users/Dell/Documents/ResQ-CD/deploy/state"
+else
+    STATE_DIR="$SCRIPT_DIR/state"
+fi
 mkdir -p "$STATE_DIR"
 
 ACTIVE_COLOR_FILE="$STATE_DIR/active_color"
 HISTORY_FILE="$STATE_DIR/history.json"
-UPSTREAM_CONF="$SCRIPT_DIR/nginx/active/upstream.conf"
+
+if [ -n "${UPSTREAM_CONF:-}" ]; then
+    UPSTREAM_CONF="$UPSTREAM_CONF"
+elif [ -d "/deploy/nginx/active" ]; then
+    UPSTREAM_CONF="/deploy/nginx/active/upstream.conf"
+elif [ -d "/c/Users/Dell/Documents/ResQ-CD/deploy/nginx/active" ]; then
+    UPSTREAM_CONF="/c/Users/Dell/Documents/ResQ-CD/deploy/nginx/active/upstream.conf"
+else
+    UPSTREAM_CONF="$SCRIPT_DIR/nginx/active/upstream.conf"
+fi
 
 START_TIME=$(date +%s)
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
@@ -67,6 +86,10 @@ with open(history_path, 'w', encoding='utf-8') as f:
             echo "  ," >> "$HISTORY_FILE"
             printf "%s\n]\n" "$entry" >> "$HISTORY_FILE"
         fi
+    fi
+
+    if [ "$SCRIPT_DIR/state" != "$STATE_DIR" ] && [ -d "$SCRIPT_DIR/state" ]; then
+        cp "$HISTORY_FILE" "$SCRIPT_DIR/state/history.json" 2>/dev/null || true
     fi
 }
 
