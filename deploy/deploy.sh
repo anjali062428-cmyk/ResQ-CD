@@ -152,7 +152,7 @@ if ! docker ps --format '{{.Names}}' | grep -q "^nginx$"; then
     echo "Starting nginx container..."
     docker compose -f "$SCRIPT_DIR/docker-compose.yml" up -d
 else
-    docker exec nginx nginx -s reload
+    docker exec nginx nginx -s reload 2>/dev/null || docker restart nginx
 fi
 sleep 2
 
