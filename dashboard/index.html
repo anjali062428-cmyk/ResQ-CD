@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ResQ-CD Deployment Dashboard</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --success: #10b981;
+      --success-bg: rgba(16, 185, 129, 0.15);
+      --danger: #ef4444;
+      --danger-bg: rgba(239, 68, 68, 0.15);
+      --blue: #3b82f6;
+      --blue-bg: rgba(59, 130, 246, 0.15);
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 2rem;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .header-title h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+    }
+    .header-title p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 0.25rem;
+    }
+    .refresh-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      background: var(--card-bg);
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      border: 1px solid var(--border);
+    }
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 8px var(--success);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.9); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    .card-title {
+      color: var(--text-muted);
+      font-size: 0.825rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+    .card-value {
+      font-size: 2rem;
+      font-weight: 700;
+    }
+    .card-value.success { color: var(--success); }
+    .card-value.danger { color: var(--danger); }
+    .table-container {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      overflow: hidden;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    .table-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+    th {
+      background: rgba(15, 23, 42, 0.6);
+      color: var(--text-muted);
+      padding: 0.85rem 1.25rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.025em;
+    }
+    .badge-success {
+      background: var(--success-bg);
+      color: var(--success);
+      border: 1px solid var(--success);
+    }
+    .badge-danger {
+      background: var(--danger-bg);
+      color: var(--danger);
+      border: 1px solid var(--danger);
+    }
+    .badge-blue {
+      background: var(--blue-bg);
+      color: var(--blue);
+      border: 1px solid var(--blue);
+    }
+    .badge-green {
+      background: var(--success-bg);
+      color: var(--success);
+      border: 1px solid var(--success);
+    }
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-title">
+        <h1>ResQ-CD Deployment Dashboard</h1>
+        <p>Live Blue-Green Deployment & Health Monitoring</p>
+      </div>
+      <div class="refresh-badge">
+        <span class="pulse-dot"></span>
+        <span id="last-updated">Auto-refresh: 5s</span>
+      </div>
+    </header>
+
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-title">Currently Live</div>
+        <div class="card-value" style="display: flex; align-items: center; gap: 0.5rem;">
+          <span class="pulse-dot"></span>
+          <span id="card-live">-</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Last Recovery</div>
+        <div class="card-value" id="card-recovery" style="font-size: 1.1rem; line-height: 1.4;">None</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Total Deploys</div>
+        <div class="card-value" id="card-total">0</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Success Rate</div>
+        <div class="card-value success" id="card-rate">0%</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Failed / Rollback</div>
+        <div class="card-value danger" id="card-failed">0</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Avg Duration</div>
+        <div class="card-value" id="card-avg">0s</div>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <div class="table-header">Deployment History</div>
+      <div style="overflow-x: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Version</th>
+              <th>Color</th>
+              <th>Status</th>
+              <th>Reason</th>
+              <th>Duration</th>
+            </tr>
+          </thead>
+          <tbody id="history-tbody">
+            <tr>
+              <td colspan="6" class="empty-state">Loading deployment history...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function fetchHistory() {
+      try {
+        const res = await fetch('/state/history.json?t=' + Date.now());
+        if (!res.ok) {
+          throw new Error('HTTP ' + res.status);
+        }
+        const data = await res.json();
+        updateDashboard(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error('Failed to load history:', err);
+      }
+    }
+
+    function updateDashboard(history) {
+      const total = history.length;
+      let successCount = 0;
+      let failedCount = 0;
+      let totalDuration = 0;
+
+      history.forEach(item => {
+        if (item.status === 'SUCCESS') {
+          successCount++;
+        } else if (item.status === 'FAILED_HEALTHCHECK' || item.status === 'ROLLED_BACK') {
+          failedCount++;
+        }
+        totalDuration += Number(item.duration_sec) || 0;
+      });
+
+      const successRate = total > 0 ? ((successCount / total) * 100).toFixed(1) : 0;
+      const avgDuration = total > 0 ? (totalDuration / total).toFixed(1) : 0;
+
+      document.getElementById('card-total').textContent = total;
+      document.getElementById('card-rate').textContent = successRate + '%';
+      document.getElementById('card-failed').textContent = failedCount;
+      document.getElementById('card-avg').textContent = avgDuration + 's';
+
+      const recoveryEl = document.getElementById('card-recovery');
+      const latest = history[history.length - 1];
+      if (latest && latest.status === 'FAILED_HEALTHCHECK') {
+        let serving = '-';
+        for (let i = history.length - 2; i >= 0; i--) {
+          if (history[i].status === 'SUCCESS') {
+            serving = history[i].version;
+            break;
+          }
+        }
+        recoveryEl.textContent = `Rejected build ${latest.version}, still serving ${serving}`;
+      } else {
+        recoveryEl.textContent = 'None';
+      }
+
+      const tbody = document.getElementById('history-tbody');
+      if (total === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No deployment records found.</td></tr>';
+        return;
+      }
+
+      // Display newest records first
+      const sortedHistory = [...history].reverse();
+      tbody.innerHTML = sortedHistory.map(row => {
+        const isSuccess = row.status === 'SUCCESS';
+        const isFail = row.status === 'FAILED_HEALTHCHECK' || row.status === 'ROLLED_BACK';
+        const statusClass = isSuccess ? 'badge-success' : (isFail ? 'badge-danger' : '');
+        const colorClass = (row.color || '').toLowerCase() === 'blue' ? 'badge-blue' : 'badge-green';
+
+        return `
+          <tr>
+            <td>${escapeHtml(row.timestamp || '-')}</td>
+            <td><strong>${escapeHtml(row.version || '-')}</strong></td>
+            <td><span class="badge ${colorClass}">${escapeHtml((row.color || '-').toUpperCase())}</span></td>
+            <td><span class="badge ${statusClass}">${escapeHtml(row.status || '-')}</span></td>
+            <td>${escapeHtml(row.reason || '-')}</td>
+            <td>${Number(row.duration_sec) || 0}s</td>
+          </tr>
+        `;
+      }).join('');
+
+      document.getElementById('last-updated').textContent = 'Updated ' + new Date().toLocaleTimeString();
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    async function fetchLiveVersion() {
+      try {
+        const res = await fetch('http://localhost:8080/api/version');
+        if (res.ok) {
+          const text = await res.text();
+          document.getElementById('card-live').textContent = text.trim();
+        }
+      } catch (err) {
+        console.error('Failed to load live version:', err);
+      }
+    }
+
+    fetchHistory();
+    setInterval(fetchHistory, 5000);
+    fetchLiveVersion();
+    setInterval(fetchLiveVersion, 5000);
+  </script>
+</body>
+</html>

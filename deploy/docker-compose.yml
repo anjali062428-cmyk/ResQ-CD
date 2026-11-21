@@ -11,6 +11,18 @@ services:
       - resqcd-net
     restart: unless-stopped
 
+  dashboard:
+    image: nginx:alpine
+    container_name: dashboard
+    ports:
+      - "8081:80"
+    volumes:
+      - ../dashboard:/usr/share/nginx/html
+      - ./state:/usr/share/nginx/html/state:ro
+    networks:
+      - resqcd-net
+    restart: unless-stopped
+
 networks:
   resqcd-net:
     external: true

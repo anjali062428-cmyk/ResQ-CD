@@ -21,6 +21,11 @@ pipeline {
                 sh "docker build -t resqcd:${BUILD_NUMBER} ./app"
             }
         }
+        stage('Trivy') {
+            steps {
+                sh "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --severity HIGH,CRITICAL --exit-code 0 resqcd:${BUILD_NUMBER}"
+            }
+        }
         stage('Deploy') {
             steps {
                 script {
