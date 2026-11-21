@@ -123,6 +123,7 @@ echo "Health check passed for $NEW."
 # 5. If pass: write upstream.conf pointing to NEW, run `docker exec nginx nginx -s reload`, update active_color.
 mkdir -p "$(dirname "$UPSTREAM_CONF")"
 echo "upstream app { server ${NEW}:8080; }" > "$UPSTREAM_CONF"
+docker exec nginx sh -c "echo 'upstream app { server ${NEW}:8080; }' > /etc/nginx/active/upstream.conf" >/dev/null 2>&1 || true
 
 if ! docker ps --format '{{.Names}}' | grep -q "^nginx$"; then
     echo "Starting nginx container..."
@@ -137,7 +138,8 @@ echo "$NEW" > "$ACTIVE_COLOR_FILE"
 POST_PASS=true
 for i in $(seq 1 5); do
     echo "Post-switch verify attempt $i/5..."
-    if ! curl -s -f "http://localhost:8080/actuator/health" >/dev/null 2>&1; then
+    if ! curl -s -f "http://localhost:8080/actuator/health" >/dev/null 2>&1 && \
+       ! curl -s -f "http://nginx/actuator/health" >/dev/null 2>&1; then
         POST_PASS=false
         break
     fi
@@ -148,6 +150,7 @@ done
 if [ "$POST_PASS" != "true" ]; then
     echo "Post-switch verification failed! Rolling back to $OLD..."
     echo "upstream app { server ${OLD}:8080; }" > "$UPSTREAM_CONF"
+    docker exec nginx sh -c "echo 'upstream app { server ${OLD}:8080; }' > /etc/nginx/active/upstream.conf" >/dev/null 2>&1 || true
     docker exec nginx nginx -s reload >/dev/null 2>&1 || true
     echo "$OLD" > "$ACTIVE_COLOR_FILE"
     docker rm -f "$NEW" >/dev/null 2>&1 || true
