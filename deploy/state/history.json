@@ -1,1 +1,9 @@
-[]
+[
+  {"timestamp": "2026-11-25T09:39:28Z", "version": "8", "color": "green", "status": "SUCCESS", "reason": "SUCCESS", "duration_sec": 42}
+  ,
+  {"timestamp": "2026-11-25T09:48:16Z", "version": "9", "color": "blue", "status": "FAILED_HEALTHCHECK", "reason": "FAILED_HEALTHCHECK", "duration_sec": 49}
+  ,
+  {"timestamp": "2026-11-25T10:02:05Z", "version": "11", "color": "blue", "status": "SUCCESS", "reason": "SUCCESS", "duration_sec": 29}
+  ,
+  {"timestamp": "2026-11-25T10:48:55Z", "version": "12", "color": "green", "status": "SUCCESS", "reason": "SUCCESS", "duration_sec": 34}
+]
