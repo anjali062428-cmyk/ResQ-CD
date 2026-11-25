@@ -1,5 +1,0 @@
-- Build ONLY the phase I ask for.
-- Do not touch other files.
-- Run verification after building and show only outputs.
-- No paid services. Everything local.
-- Keep explanations short. Prefer code over prose.

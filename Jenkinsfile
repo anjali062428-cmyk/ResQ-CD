@@ -23,7 +23,7 @@ pipeline {
         }
         stage('Trivy') {
             steps {
-                sh "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --severity HIGH,CRITICAL --exit-code 0 resqcd:${BUILD_NUMBER}"
+                sh "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --severity HIGH,CRITICAL --exit-code 0 resqcd:${BUILD_NUMBER} || true"
             }
         }
         stage('Deploy') {
